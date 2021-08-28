@@ -4,7 +4,9 @@ import router from './router'
 import store from './store'
 import { globalRegister } from './global'
 
-import './service/axios_demo'
+import dxRequest from './service'
+
+// import './service/axios_demo'
 
 // createApp(App).use(router).use(store).mount('#app')
 const app = createApp(App)
@@ -14,3 +16,8 @@ app.use(globalRegister)
 app.use(router)
 app.use(store)
 app.mount('#app')
+
+dxRequest.request({
+  url: '/home/multidata',
+  method: 'get'
+})
