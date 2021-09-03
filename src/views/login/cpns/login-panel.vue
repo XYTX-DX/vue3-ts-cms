@@ -1,21 +1,21 @@
 <template>
   <div class="login-panel">
     <h1 class="title">后台管理系统</h1>
-    <el-tabs type="border-card" stretch>
-      <el-tab-pane>
+    <el-tabs type="border-card" stretch v-model="loginType">
+      <el-tab-pane name="account">
         <template #label>
-          <span><i class="el-icon-date"></i> 账号登录</span>
+          <span><i class="el-icon-user-solid"></i> 账号登录</span>
         </template>
         <login-account ref="accountRef"></login-account>
       </el-tab-pane>
-      <el-tab-pane>
+      <el-tab-pane name="phone">
         <template #label>
-          <span><i class="el-icon-date"></i> 手机登录</span>
+          <span><i class="el-icon-mobile-phone"></i> 手机登录</span>
         </template>
         <login-phone></login-phone>
       </el-tab-pane>
     </el-tabs>
-    <div class="account-control">
+    <div class="account-control" v-if="loginType === 'account'">
       <el-checkbox v-model="isKeepPassword">记住密码</el-checkbox>
       <el-link type="primary">忘记密码</el-link>
     </div>
@@ -38,15 +38,21 @@ export default defineComponent({
   setup() {
     const isKeepPassword = ref(true)
     const accountRef = ref<InstanceType<typeof LoginAccount>>()
+    const loginType = ref('account')
 
     const handelLoginClick = () => {
-      accountRef.value?.loginAction()
+      if (loginType.value == 'account') {
+        accountRef.value?.loginAction(isKeepPassword.value)
+      } else {
+        console.log('通过手机号登录')
+      }
     }
 
     return {
       isKeepPassword,
       handelLoginClick,
-      accountRef
+      accountRef,
+      loginType
     }
   }
 })
@@ -66,5 +72,6 @@ export default defineComponent({
 }
 .btn {
   width: 100%;
+  margin-top: 8px;
 }
 </style>
