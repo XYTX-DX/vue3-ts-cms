@@ -6,7 +6,7 @@
         <template #label>
           <span><i class="el-icon-date"></i> 账号登录</span>
         </template>
-        <login-account></login-account>
+        <login-account ref="accountRef"></login-account>
       </el-tab-pane>
       <el-tab-pane>
         <template #label>
@@ -17,8 +17,11 @@
     </el-tabs>
     <div class="account-control">
       <el-checkbox v-model="isKeepPassword">记住密码</el-checkbox>
-      <el-link>忘记密码</el-link>
+      <el-link type="primary">忘记密码</el-link>
     </div>
+    <el-button type="primary" class="btn" @click="handelLoginClick"
+      >立即登录</el-button
+    >
   </div>
 </template>
 
@@ -34,8 +37,16 @@ export default defineComponent({
   },
   setup() {
     const isKeepPassword = ref(true)
+    const accountRef = ref<InstanceType<typeof LoginAccount>>()
+
+    const handelLoginClick = () => {
+      accountRef.value?.loginAction()
+    }
+
     return {
-      isKeepPassword
+      isKeepPassword,
+      handelLoginClick,
+      accountRef
     }
   }
 })
@@ -52,5 +63,8 @@ export default defineComponent({
   display: flex;
   justify-content: space-between;
   margin-top: 10px;
+}
+.btn {
+  width: 100%;
 }
 </style>
