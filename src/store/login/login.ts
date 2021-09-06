@@ -1,6 +1,14 @@
 import { Module } from 'vuex'
 import { ILoginState } from './types'
 import { IRootState } from '../types'
+import {
+  accountLoginRequest,
+  requestUserInfoById,
+  requestUserMenusById
+} from '@/service/login/login'
+import { IAccount } from '@/service/login/type'
+import localCache from '@/utils/cache'
+import router from '@/router'
 
 const loginModule: Module<ILoginState, IRootState> = {
   namespaced: true,
@@ -12,12 +20,57 @@ const loginModule: Module<ILoginState, IRootState> = {
     }
   },
   actions: {
-    accountLoginAction({ commit }, payload: any) {
-      console.log('执行登录', payload)
+    async accountLoginAction({ commit }, payload: IAccount) {
+      // 1.实现登录逻辑
+      const loginResult = await accountLoginRequest(payload)
+      const { id, token } = loginResult.data
+      commit('changeToken', token)
+      localCache.setCache('token', token)
+
+      // 2.请求用户信息
+      const userInfoResult = await requestUserInfoById(id)
+      const userInfo = userInfoResult.data
+      commit('changeUserInfo', userInfo)
+      localCache.setCache('userInfo', userInfo)
+
+      // 3.请求用户菜单
+      const userMenusResult = await requestUserMenusById(userInfo.id)
+      const userMenus = userMenusResult.data
+      commit('changeUserMenus', userMenus)
+      localCache.setCache('userMenus', userMenus)
+
+      // 4.跳转到首页
+      router.push('/main')
+    },
+    loadLocalLogin({ commit }) {
+      const token = localCache.getCache('token')
+      if (token) {
+        commit('changeToken', token)
+      }
+
+      const userInfo = localCache.getCache('userInfo')
+      if (userInfo) {
+        commit('changeUserInfo', userInfo)
+      }
+
+      const userMenus = localCache.getCache('userMenus')
+      if (userMenus) {
+        commit('changeUserMenus', userMenus)
+      }
     }
   },
   getters: {},
-  mutations: {}
+  mutations: {
+    changeToken(state, token) {
+      state.token = token
+    },
+    changeUserInfo(state, userInfo) {
+      state.userInfo = userInfo
+    },
+    changeUserMenus(state, userMenus) {
+      state.userMenus = userMenus
+    }
+  }
 }
 
 export default loginModule
