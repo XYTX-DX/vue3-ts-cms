@@ -1,6 +1,8 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import localCache from '@/utils/cache'
+// import overview from './main/analysis/overview/overview'
+// import dashboard from './main/analysis/dashboard/dashboard'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -14,6 +16,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/main',
     component: () => import('@/views/main/main.vue')
+    // children: [overview, dashboard]
   }
 ]
 

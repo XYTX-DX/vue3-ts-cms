@@ -31,13 +31,13 @@ const components = [
   ElCheckbox,
   ElLink,
   ElContainer,
-  ElAside,
   ElHeader,
   ElMain,
+  ElAside,
   ElMenu,
-  ElSubmenu,
   ElMenuItem,
-  ElMenuItemGroup
+  ElMenuItemGroup,
+  ElSubmenu
 ]
 
 export default function (app: App): void {
