@@ -8,6 +8,7 @@ import {
 } from '@/service/login/login'
 import { IAccount } from '@/service/login/type'
 import localCache from '@/utils/cache'
+import { mapMenusToRoutes } from '@/utils/map-menus'
 import router from '@/router'
 
 const loginModule: Module<ILoginState, IRootState> = {
@@ -69,6 +70,14 @@ const loginModule: Module<ILoginState, IRootState> = {
     },
     changeUserMenus(state, userMenus) {
       state.userMenus = userMenus
+
+      // 注册动态路由
+      // 根据用户角色获取用户菜单
+      const routes = mapMenusToRoutes(userMenus)
+      // 将获取到的用户菜单动态添加到路由中
+      routes.forEach((route) => {
+        router.addRoute('main', route)
+      })
     }
   }
 }
