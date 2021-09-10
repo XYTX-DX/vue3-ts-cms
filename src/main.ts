@@ -6,7 +6,7 @@ import './assets/css/index.less'
 import { setupStore } from '@/store'
 
 // import './service/axios_demo'
-import hyRequest from './service'
+// import hyRequest from './service'
 
 import App from './App.vue'
 
