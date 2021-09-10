@@ -1,18 +1,18 @@
 <template>
   <div class="user">
-    <dx-form v-bind="searchFormConfig"></dx-form>
+    <page-search :searchFormConfig="searchFormConfig" />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import DxForm from '@/base-ui/form'
+import pageSearch from '@/components/page-search'
 import { searchFormConfig } from './config/search.config'
 
 export default defineComponent({
   name: 'user',
   components: {
-    DxForm
+    pageSearch
   },
   setup() {
     return {
