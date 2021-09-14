@@ -32,8 +32,8 @@
                     v-for="option in item.options"
                     :key="option.value"
                     :value="option.value"
+                    :label="option.title"
                   >
-                    {{ option.title }}
                   </el-option>
                 </el-select>
               </template>
@@ -62,7 +62,7 @@ export default defineComponent({
   props: {
     modelValue: {
       type: Object,
-      requested: true
+      required: true
     },
     formItems: {
       type: Array as PropType<IFormItem[]>,
