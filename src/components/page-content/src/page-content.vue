@@ -13,9 +13,13 @@
 
       <!-- 表格中的插槽 -->
       <template #status="scope">
-        <el-button size="mini">{{
-          scope.row.enable ? '启用' : '禁用'
-        }}</el-button>
+        <el-button
+          plain
+          size="mini"
+          :type="scope.row.enable ? 'success' : 'danger'"
+        >
+          {{ scope.row.enable ? '启用' : '禁用' }}
+        </el-button>
       </template>
 
       <template #createAt="scope">
@@ -35,6 +39,16 @@
             >删除</el-button
           >
         </div>
+      </template>
+
+      <template
+        v-for="item in otherPropSlots"
+        :key="item.prop"
+        #[item.slotName]="scope"
+      >
+        <template v-if="item.slotName">
+          <slot :name="item.slotName" :row="scope.row"></slot>
+        </template>
       </template>
     </dx-table>
   </div>
@@ -62,12 +76,12 @@ export default defineComponent({
   setup(props) {
     const store = useStore()
 
-    // 双向绑定页面信息
+    // 1.双向绑定页面信息
     const pageInfo = ref({ currentPage: 1, pageSize: 10 })
     // 监听pageInfo,发生改变时重新发送请求
     watch(pageInfo, () => getPageData())
 
-    // 发送网络请求
+    // 2.发送网络请求
     const getPageData = (queryInfo: any = {}) => {
       store.dispatch('system/getPageListAction', {
         pageName: props.pageName,
@@ -81,7 +95,7 @@ export default defineComponent({
     // 初始化页面时发送一次请求,获取到后端数据
     getPageData()
 
-    // 从vuex中获取数据
+    // 3.从vuex中获取数据
     const dataList = computed(() =>
       store.getters[`system/pageListData`](props.pageName)
     )
@@ -90,7 +104,18 @@ export default defineComponent({
       store.getters[`system/pageListCount`](props.pageName)
     )
 
-    return { dataList, getPageData, dataCount, pageInfo }
+    // 4.获取其他的动态插槽名称
+    const otherPropSlots = props.contentTableConfig.propList.filter(
+      (item: any) => {
+        if (item.slotName === 'status') return false
+        if (item.slotName === 'createAt') return false
+        if (item.slotName === 'updateAt') return false
+        if (item.slotName === 'handler') return false
+        return true
+      }
+    )
+
+    return { dataList, getPageData, dataCount, pageInfo, otherPropSlots }
   }
 })
 </script>

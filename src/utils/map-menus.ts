@@ -1,6 +1,10 @@
 import { RouteRecordRaw } from 'vue-router'
 import { IBreadcrumb } from '@/base-ui/breadcrumb'
 
+// 判断路径是否是main
+let firstMenu: any = null
+
+// 动态注册路由函数
 export function mapMenusToRoutes(userMenus: any[]): RouteRecordRaw[] {
   const routes: RouteRecordRaw[] = []
 
@@ -22,6 +26,9 @@ export function mapMenusToRoutes(userMenus: any[]): RouteRecordRaw[] {
         if (route) {
           routes.push(route)
         }
+        if (!firstMenu) {
+          firstMenu = menu
+        }
       } else {
         _recurseGetRoute(menu.children)
       }
@@ -33,6 +40,7 @@ export function mapMenusToRoutes(userMenus: any[]): RouteRecordRaw[] {
   return routes
 }
 
+// 路径和选项保持一直函数
 export function pathMapToMenu(
   userMenus: any[],
   currentPath: string,
@@ -53,6 +61,7 @@ export function pathMapToMenu(
   }
 }
 
+// 面包屑获取路径函数
 export function pathMapBreadcrumbs(
   userMenus: any[],
   currentPath: string
@@ -76,3 +85,24 @@ export function pathMapBreadcrumbs(
 
   return breadcrumbs
 }
+
+// 根据用户菜单获取用户权限函数
+export function mapMenusToPermissions(userMenus: any[]) {
+  const permissions: string[] = []
+
+  const _recurseGetPermission = (menus: any[]) => {
+    for (const menu of menus) {
+      if (menu.type === 1 || menu.type === 2) {
+        _recurseGetPermission(menu.children ?? [])
+      } else if (menu.type === 3) {
+        permissions.push(menu.permission)
+      }
+    }
+  }
+
+  _recurseGetPermission(userMenus)
+
+  return permissions
+}
+
+export { firstMenu }
