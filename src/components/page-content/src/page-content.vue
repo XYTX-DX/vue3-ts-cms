@@ -8,7 +8,9 @@
     >
       <!-- 头部插槽 -->
       <template #headerHandler>
-        <el-button type="primary" size="medium">添加用户</el-button>
+        <el-button v-if="isCreate" type="primary" size="medium"
+          >添加用户</el-button
+        >
       </template>
 
       <!-- 表格中的插槽 -->
@@ -32,10 +34,14 @@
 
       <template #handler>
         <div class="handle-btns">
-          <el-button size="mini" type="text" icon="el-icon-edit"
+          <el-button v-if="isUpdate" size="mini" type="text" icon="el-icon-edit"
             >编辑</el-button
           >
-          <el-button size="mini" type="text" icon="el-icon-delete"
+          <el-button
+            v-if="isDelete"
+            size="mini"
+            type="text"
+            icon="el-icon-delete"
             >删除</el-button
           >
         </div>
@@ -58,6 +64,7 @@
 import { computed, defineComponent, ref, watch } from 'vue'
 import DxTable from '@/base-ui/table'
 import { useStore } from '@/store'
+import { usePermission } from '@/hooks/user-permissions'
 
 export default defineComponent({
   props: {
@@ -76,6 +83,12 @@ export default defineComponent({
   setup(props) {
     const store = useStore()
 
+    // 0.获取用户权限
+    const isCreate = usePermission(props.pageName, 'create')
+    const isUpdate = usePermission(props.pageName, 'update')
+    const isQuery = usePermission(props.pageName, 'query')
+    const isDelete = usePermission(props.pageName, 'delete')
+
     // 1.双向绑定页面信息
     const pageInfo = ref({ currentPage: 1, pageSize: 10 })
     // 监听pageInfo,发生改变时重新发送请求
@@ -83,6 +96,7 @@ export default defineComponent({
 
     // 2.发送网络请求
     const getPageData = (queryInfo: any = {}) => {
+      if (!isQuery) return
       store.dispatch('system/getPageListAction', {
         pageName: props.pageName,
         queryInfo: {
@@ -115,7 +129,16 @@ export default defineComponent({
       }
     )
 
-    return { dataList, getPageData, dataCount, pageInfo, otherPropSlots }
+    return {
+      dataList,
+      getPageData,
+      dataCount,
+      pageInfo,
+      otherPropSlots,
+      isUpdate,
+      isDelete,
+      isCreate
+    }
   }
 })
 </script>
